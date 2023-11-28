@@ -2,8 +2,6 @@ import './App.css';
 import { useSession, useSupabaseClient, useSessionContext } from '@supabase/auth-helpers-react';
 import DateTimePicker from 'react-datetime-picker';
 import { useState } from 'react';
-import 'react-calendar/dist/Calendar.css';
-import 'react-clock/dist/Clock.css';
 
 function App() {
   const [ start, setStart ] = useState(new Date());
