@@ -1,5 +1,3 @@
-/* App.css */
-
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f8f9fa;
@@ -49,11 +47,30 @@ body {
     border-radius: 4px;
     cursor: pointer;
   }
-  
+
   button:hover {
     background-color: #0056b3;
   }
   
+  .signout {
+    background-color: red;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .signout:hover {
+    background-color: rgb(247, 38, 38);
+  }
+  
+  .email {
+    font-size: 30px;
+  }
+
+
+
 /* Date and Time Picker Styles */
 .date-time-container {
     display: flex;
