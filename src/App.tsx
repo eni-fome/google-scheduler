@@ -19,6 +19,7 @@ function App() {
   const { isLoading } = useSessionContext();
 
   if (isLoading) {
+    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     return <></>;
   }
 
@@ -39,23 +40,23 @@ function App() {
     await supabase.auth.signOut();
   }
 
-  const handleRemoveTask = (index) => {
+  const handleRemoveTask = (index: any) => {
     const updatedTasks = [...tasks];
     updatedTasks.splice(index, 1);
     setTasks(updatedTasks);
   };
 
-  async function createCalendarEvent(task) {
+  async function createCalendarEvent(task: any) {
     console.log("Creating calendar event");
   
     // Automatically detect the user's time zone
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   
-    const formatDate = (date) => {
+    const formatDate = (date: any) => {
       return date.toISOString().replace(/(\.\d{3})\d+/, "$1"); // Remove milliseconds
     };
   
-    const recurrenceRule = (recurrence) => {
+    const recurrenceRule = (recurrence: any) => {
       switch (recurrence) {
         case 'daily':
           return 'RRULE:FREQ=DAILY';
@@ -82,6 +83,7 @@ function App() {
     };
   
     if (task.recurrence !== 'none') {
+      // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       event['recurrence'] = [recurrenceRule(task.recurrence)];
     }
   
@@ -89,6 +91,7 @@ function App() {
       const response = await fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events", {
         method: "POST",
         headers: {
+          // @ts-expect-error TS(2531): Object is possibly 'null'.
           'Authorization': 'Bearer ' + session.provider_token,
           'Content-Type': 'application/json',
         },
@@ -116,6 +119,7 @@ function App() {
       eventDescription,
       recurrence,
     };
+    // @ts-expect-error TS(2322): Type '{ start: Date; end: Date; eventName: string;... Remove this comment to see the full error message
     setTasks([...tasks, newTask]); // Add the new task to the list
     // Clear the input fields after creating a task
     setStart(new Date());
@@ -133,44 +137,73 @@ function App() {
   };
 
   return (
+    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <div className="App">
+      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <div style={{ width: "400px", margin: "30px auto" }}>
         {session ? (
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <h2>Hey there {session.user.email}</h2>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <p>Start of your event</p>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <DateTimePicker onChange={setStart} value={start} />
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <p>End of your event</p>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <DateTimePicker onChange={setEnd} value={end} />
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <p>Event name</p>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <input type="text" value={eventName} onChange={(e) => setEventName(e.target.value)} />
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <p>Event description</p>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <input type="text" value={eventDescription} onChange={(e) => setEventDescription(e.target.value)} />
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <p>Recurrence</p>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <select value={recurrence} onChange={(e) => setRecurrence(e.target.value)}>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <option value="none">None</option>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <option value="daily">Daily</option>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <option value="weekly">Weekly</option>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <option value="monthly">Monthly</option>
             </select>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <hr />
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <button onClick={handleCreateTask}>Create Task</button>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <ul>
               {tasks.map((task, index) => (
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <li key={index}>
+                  // @ts-expect-error TS(2339): Property 'eventName' does not exist on type 'never... Remove this comment to see the full error message
                   {`${task.eventName} - ${task.start.toISOString()} to ${task.end.toISOString()} - Recurrence: ${task.recurrence}`}
+                  // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                   <button onClick={() => handleRemoveTask(index)}>Remove Recurrence</button>
                 </li>
               ))}
             </ul>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <button onClick={handlePushToCalendar}>Push to Google Calendar</button>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <p></p>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <button className="signout" onClick={signOut}>
               Sign Out
             </button>
           </>
         ) : (
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <button onClick={googleSignIn}>Sign In With Google</button>
           </>
         )}
