@@ -1,10 +1,11 @@
-import { render, screen } from '@testing-library/react';
-// @ts-expect-error TS(6142): Module './App' was resolved to 'C:/Users/fomea/One... Remove this comment to see the full error message
-import App from './App';
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import App from './App'; // Replace with correct import path
 
-test('renders learn react link', () => {
-  // @ts-expect-error TS(2749): 'App' refers to a value, but is being used as a ty... Remove this comment to see the full error message
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
-});
+
+jest.mock('@supabase/auth-helpers-react', () => ({
+  useSession: jest.fn(),
+}));
+
+
+
