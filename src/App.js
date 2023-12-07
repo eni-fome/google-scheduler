@@ -47,14 +47,14 @@ function App() {
 
   async function createCalendarEvent(task) {
     console.log("Creating calendar event");
-
+  
     // Automatically detect the user's time zone
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
+  
     const formatDate = (date) => {
       return date.toISOString().replace(/(\.\d{3})\d+/, "$1"); // Remove milliseconds
     };
-
+  
     const recurrenceRule = (recurrence) => {
       switch (recurrence) {
         case 'daily':
@@ -67,7 +67,7 @@ function App() {
           return '';
       }
     };
-
+  
     const event = {
       'summary': task.eventName,
       'description': task.eventDescription,
@@ -79,9 +79,12 @@ function App() {
         'dateTime': formatDate(task.end),
         'timeZone': userTimeZone,
       },
-      'recurrence': [recurrenceRule(task.recurrence)],
     };
-
+  
+    if (task.recurrence !== 'none') {
+      event['recurrence'] = [recurrenceRule(task.recurrence)];
+    }
+  
     try {
       const response = await fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events", {
         method: "POST",
@@ -91,11 +94,11 @@ function App() {
         },
         body: JSON.stringify(event),
       });
-
+  
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
-
+  
       const data = await response.json();
       console.log(data);
       alert("Event created, check your Google Calendar!");
