@@ -9,25 +9,54 @@ import 'react-clock/dist/Clock.css';
 
 
 function App() {
+  type RecurrenceType = 'daily' | 'weekly' | 'monthly' | 'none';
+
   interface Task {
     start: Date;
     end: Date;
     eventName: string;
     eventDescription: string;
-    recurrence: string;
+    recurrence: RecurrenceType;
   }
+
+  interface Event {
+    summary: string;
+    description: string;
+    start: { dateTime: string; timeZone: string; };
+    end: { dateTime: string; timeZone: string; };
+    recurrence?: string[]; 
+  }
+  
 
   const [start, setStart] = useState<Date>(new Date());
   const [end, setEnd] = useState<Date>(new Date());
   const [eventName, setEventName] = useState<string>("");
   const [eventDescription, setEventDescription] = useState<string>("");
-  const [tasks, setTasks] = useState<Task[]>([]); // Assuming Task is a type you have defined
-  const [recurrence, setRecurrence] = useState<string>("none");
+  const [tasks, setTasks] = useState<Task[]>([]); 
+  const [recurrence, setRecurrence] = useState<RecurrenceType>("none");
   
 
   const session = useSession(); // tokens, when session exists we have a user
   const supabase = useSupabaseClient(); // talk to supabase!
   const { isLoading } = useSessionContext();
+
+
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  
+  const formatDate = (date: any) => {
+    return new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZone: userTimeZone
+}).format(date);
+  };
+
+  const recurrenceRule = (recurrence: 'daily' | 'weekly' | 'monthly') =>
+  `RRULE:FREQ=${recurrence.toUpperCase()}`;
+
 
   if (isLoading) {
     return <></>;
@@ -56,46 +85,26 @@ function App() {
     setTasks(updatedTasks);
   };
 
-  async function createCalendarEvent(task: any) {
+  async function createCalendarEvent(task: Task) {
     console.log("Creating calendar event");
   
-    // Automatically detect the user's time zone
-    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  
-    const formatDate = (date: any) => {
-      return date.toISOString().replace(/(\.\d{3})\d+/, "$1"); // Remove milliseconds
-    };
-  
-    const recurrenceRule = (recurrence: any) => {
-      switch (recurrence) {
-        case 'daily':
-          return 'RRULE:FREQ=DAILY';
-        case 'weekly':
-          return 'RRULE:FREQ=WEEKLY';
-        case 'monthly':
-          return 'RRULE:FREQ=MONTHLY';
-        default:
-          return '';
-      }
-    };
-  
-    const event = {
+    const event: Event = {
       'summary': task.eventName,
       'description': task.eventDescription,
       'start': {
-        'dateTime': formatDate(task.start),
+        'dateTime': task.start.toISOString(),
         'timeZone': userTimeZone,
       },
       'end': {
-        'dateTime': formatDate(task.end),
+        'dateTime': task.end.toISOString(),
         'timeZone': userTimeZone,
       },
     };
   
     if (task.recurrence !== 'none') {
-      // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      event['recurrence'] = [recurrenceRule(task.recurrence)];
+      event.recurrence = [recurrenceRule(task.recurrence)];
     }
+    
   
     try {
       const response = await fetch("https://www.googleapis.com/calendar/v3/calendars/primary/events", {
@@ -130,8 +139,7 @@ function App() {
       recurrence,
     };
 
-    setTasks([...tasks, newTask]); // Add the new task to the list
-    // Clear the input fields after creating a task
+    setTasks([...tasks, newTask]);
     setStart(new Date());
     setEnd(new Date());
     setEventName("");
@@ -161,7 +169,7 @@ function App() {
             <p>Event description</p>
             <input type="text" value={eventDescription} onChange={(e) => setEventDescription(e.target.value)} />
             <p>Recurrence</p>
-            <select value={recurrence} onChange={(e) => setRecurrence(e.target.value)}>
+            <select value={recurrence} onChange={(e) => setRecurrence(e.target.value as RecurrenceType)}>
               <option value="none">None</option>
               <option value="daily">Daily</option>
               <option value="weekly">Weekly</option>
@@ -171,12 +179,17 @@ function App() {
             <button onClick={handleCreateTask}>Create Task</button>
             <ul>
               {tasks.map((task, index) => (
-                <li key={index}>
-                  {`${task.eventName} - ${task.start.toISOString()} to ${task.end.toISOString()} - Recurrence: ${task.recurrence}`}
-                  <button onClick={() => handleRemoveTask(index)}>Remove Recurrence</button>
-                </li>
+              <li key={index}>
+              <div>
+                {`${task.eventName} - From ${formatDate(task.start)} to ${formatDate(task.end)}`}
+              </div>
+              <div>Recurrence: {task.recurrence}</div>
+              <button onClick={() => handleRemoveTask(index)} style={{border: 'none', background: 'none'}}>
+                  <span role="img" aria-label="Remove Task">❌</span>
+                </button>
+              </li>
               ))}
-            </ul>
+    </ul>
             <button onClick={handlePushToCalendar}>Push to Google Calendar</button>
             <p></p>
             <button className="signout" onClick={signOut}>
