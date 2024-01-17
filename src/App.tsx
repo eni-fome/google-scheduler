@@ -6,12 +6,8 @@ import {
     useSupabaseClient,
     useSessionContext,
 } from '@supabase/auth-helpers-react';
-// import DateTimePicker from 'react-datetime-picker';
-// import 'react-datetime-picker/dist/DateTimePicker.css';
-// import 'react-calendar/dist/Calendar.css';
-// import 'react-clock/dist/Clock.css';
 import Form from './components/Form';
-import DateTimePicker from 'react-datetime-picker';
+
 
 function App() {
     type RecurrenceType = 'daily' | 'weekly' | 'monthly' | 'none';
@@ -171,25 +167,7 @@ function App() {
         setRecurrence('none');
     };
 
-    // const handleSaveTask = async () => {
-    //   const taskToSave = { start, end, eventName, eventDescription, recurrence };
 
-    //   if (updatedTask && updatedTask.id) {
-    //     // Update existing task
-    //     await editEvent(updatedTask.id, { ...updatedTask, ...taskToSave });
-    //   } else {
-    //     // Create new task
-    //     await createCalendarEvent(taskToSave);
-    //   }
-
-    //   // Reset form after save
-    //   setStart(new Date());
-    //   setEnd(new Date());
-    //   setEventName('');
-    //   setEventDescription('');
-    //   setRecurrence('none');
-    //   setUpdatedTask(null); // Reset updatedTask
-    // };
 
     async function fetchCalendarEvents() {
         try {
@@ -365,11 +343,6 @@ function App() {
         fetchCalendarEvents();
     }
 
-    // const handleRemoveTask = (index: any) => {
-    //   const updatedTasks = [...tasks];
-    //   updatedTasks.splice(index, 1);
-    //   setTasks(updatedTasks);
-    // };
 
     return (
         <div className="App">
@@ -447,6 +420,5 @@ function App() {
         </div>
     );
 }
-
 
 export default App;
