@@ -7,28 +7,10 @@ import {
     useSessionContext,
 } from '@supabase/auth-helpers-react';
 import Form from './components/Form';
+import { RecurrenceType, Task, Event } from './types'
 
 
 function App() {
-    type RecurrenceType = 'daily' | 'weekly' | 'monthly' | 'none';
-
-    interface Task {
-        id?: string;
-        start: Date;
-        end: Date;
-        eventName: string;
-        eventDescription: string;
-        recurrence: RecurrenceType;
-    }
-
-    interface Event {
-        summary: string;
-        description: string;
-        start: { dateTime: string; timeZone: string };
-        end: { dateTime: string; timeZone: string };
-        recurrence?: string[];
-    }
-
     const [start, setStart] = useState<Date>(new Date());
     const [end, setEnd] = useState<Date>(new Date());
     const [eventName, setEventName] = useState<string>('');
