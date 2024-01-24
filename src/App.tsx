@@ -7,8 +7,13 @@ import {
     useSessionContext,
 } from '@supabase/auth-helpers-react';
 import Form from './components/Form';
-import { RecurrenceType, Task, Event } from './types'
-
+import { RecurrenceType, Task, Event } from './types';
+import {
+    userTimeZone,
+    formatDate,
+    recurrenceRule,
+    convertRecurrence,
+} from './utils';
 
 function App() {
     const [start, setStart] = useState<Date>(new Date());
@@ -32,36 +37,36 @@ function App() {
         }
     }, [session]);
 
-    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    const formatDate = (date: any) => {
-        return new Intl.DateTimeFormat('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            timeZone: userTimeZone,
-        }).format(date);
-    };
+    // const formatDate = (date: any) => {
+    //     return new Intl.DateTimeFormat('en-US', {
+    //         year: 'numeric',
+    //         month: 'long',
+    //         day: 'numeric',
+    //         hour: '2-digit',
+    //         minute: '2-digit',
+    //         timeZone: userTimeZone,
+    //     }).format(date);
+    // };
 
-    const recurrenceRule = (recurrence: 'daily' | 'weekly' | 'monthly') =>
-        `RRULE:FREQ=${recurrence.toUpperCase()}`;
+    // const recurrenceRule = (recurrence: 'daily' | 'weekly' | 'monthly') =>
+    //     `RRULE:FREQ=${recurrence.toUpperCase()}`;
 
-    const convertRecurrence = (
-        recurrenceString: string[] | undefined,
-    ): RecurrenceType => {
-        if (recurrenceString && recurrenceString[0].includes('DAILY')) {
-            return 'daily';
-        }
-        if (recurrenceString && recurrenceString[0].includes('WEEKLY')) {
-            return 'weekly';
-        }
-        if (recurrenceString && recurrenceString[0].includes('MONTHLY')) {
-            return 'monthly';
-        }
-        return 'none';
-    };
+    // const convertRecurrence = (
+    //     recurrenceString: string[] | undefined,
+    // ): RecurrenceType => {
+    //     if (recurrenceString && recurrenceString[0].includes('DAILY')) {
+    //         return 'daily';
+    //     }
+    //     if (recurrenceString && recurrenceString[0].includes('WEEKLY')) {
+    //         return 'weekly';
+    //     }
+    //     if (recurrenceString && recurrenceString[0].includes('MONTHLY')) {
+    //         return 'monthly';
+    //     }
+    //     return 'none';
+    // };
 
     if (isLoading) {
         return <></>;
@@ -148,8 +153,6 @@ function App() {
         setEventDescription('');
         setRecurrence('none');
     };
-
-
 
     async function fetchCalendarEvents() {
         try {
@@ -325,7 +328,6 @@ function App() {
         fetchCalendarEvents();
     }
 
-
     return (
         <div className="App">
             <div style={{ width: '400px', margin: '30px auto' }}>
@@ -336,21 +338,21 @@ function App() {
                             {showForm ? 'Close' : 'Add Task'}
                         </button>
                         {showForm && (
-                          <Form
-                start={start}
-                end={end}
-                eventName={eventName}
-                eventDescription={eventDescription}
-                recurrence={recurrence}
-                setStart={setStart}
-                setEnd={setEnd}
-                setEventName={setEventName}
-                setEventDescription={setEventDescription}
-                setRecurrence={setRecurrence}
-                updatedTask={updatedTask}
-                handleCreateTask={handleCreateTask}
-                handleEditTask={handleEditTask}
-              />
+                            <Form
+                                start={start}
+                                end={end}
+                                eventName={eventName}
+                                eventDescription={eventDescription}
+                                recurrence={recurrence}
+                                setStart={setStart}
+                                setEnd={setEnd}
+                                setEventName={setEventName}
+                                setEventDescription={setEventDescription}
+                                setRecurrence={setRecurrence}
+                                updatedTask={updatedTask}
+                                handleCreateTask={handleCreateTask}
+                                handleEditTask={handleEditTask}
+                            />
                         )}
 
                         <button

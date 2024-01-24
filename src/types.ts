@@ -1,8 +1,6 @@
-// types.ts
-
 export type RecurrenceType = 'daily' | 'weekly' | 'monthly' | 'none';
-  
-  export interface Task {
+
+export interface Task {
     id?: string;
     start: Date;
     end: Date;
@@ -10,13 +8,11 @@ export type RecurrenceType = 'daily' | 'weekly' | 'monthly' | 'none';
     eventDescription: string;
     recurrence: RecurrenceType;
 }
-  
-  export interface Event {
+
+export interface Event {
     summary: string;
     description: string;
     start: { dateTime: string; timeZone: string };
     end: { dateTime: string; timeZone: string };
     recurrence?: string[];
 }
-
-  
