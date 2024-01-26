@@ -15,6 +15,8 @@ import {
     convertRecurrence,
 } from './utils';
 
+import { createCalendarEvent } from './components/calendarService';
+
 function App() {
     const [start, setStart] = useState<Date>(new Date());
     const [end, setEnd] = useState<Date>(new Date());
@@ -29,6 +31,7 @@ function App() {
     const session = useSession();
     const supabase = useSupabaseClient();
     const { isLoading } = useSessionContext();
+    const apiUrl = 'https://www.googleapis.com/calendar/v3/calendars/primary/events'
 
     useEffect(() => {
         if (session) {
@@ -56,53 +59,55 @@ function App() {
     async function signOut() {
         await supabase.auth.signOut();
     }
-    async function createCalendarEvent(task: Task) {
-        console.log('Creating calendar event');
 
-        const event: Event = {
-            summary: task.eventName,
-            description: `${task.eventDescription} [Created with MyCalendarApp]`,
-            start: {
-                dateTime: task.start.toISOString(),
-                timeZone: userTimeZone,
-            },
-            end: {
-                dateTime: task.end.toISOString(),
-                timeZone: userTimeZone,
-            },
-        };
 
-        if (task.recurrence !== 'none') {
-            event.recurrence = [recurrenceRule(task.recurrence)];
-        }
+    // async function createCalendarEvent(task: Task) {
+    //     console.log('Creating calendar event');
 
-        try {
-            const response = await fetch(
-                'https://www.googleapis.com/calendar/v3/calendars/primary/events',
-                {
-                    method: 'POST',
-                    headers: {
-                        Authorization:
-                            'Bearer ' + (session?.provider_token || ''),
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(event),
-                },
-            );
+    //     const event: Event = {
+    //         summary: task.eventName,
+    //         description: `${task.eventDescription} [Created with MyCalendarApp]`,
+    //         start: {
+    //             dateTime: task.start.toISOString(),
+    //             timeZone: userTimeZone,
+    //         },
+    //         end: {
+    //             dateTime: task.end.toISOString(),
+    //             timeZone: userTimeZone,
+    //         },
+    //     };
 
-            if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
-            }
+    //     if (task.recurrence !== 'none') {
+    //         event.recurrence = [recurrenceRule(task.recurrence)];
+    //     }
 
-            const data = await response.json();
-            console.log(data);
-            alert('Event created, check your Google Calendar!');
-        } catch (error) {
-            console.error(error);
-            alert('Error creating event. Please try again.');
-        }
-        fetchCalendarEvents();
-    }
+    //     try {
+    //         const response = await fetch(
+    //             apiUrl,
+    //             {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     Authorization:
+    //                         'Bearer ' + (session?.provider_token || ''),
+    //                     'Content-Type': 'application/json',
+    //                 },
+    //                 body: JSON.stringify(event),
+    //             },
+    //         );
+
+    //         if (!response.ok) {
+    //             throw new Error(`Error: ${response.statusText}`);
+    //         }
+
+    //         const data = await response.json();
+    //         console.log(data);
+    //         alert('Event created, check your Google Calendar!');
+    //     } catch (error) {
+    //         console.error(error);
+    //         alert('Error creating event. Please try again.');
+    //     }
+    //     fetchCalendarEvents();
+    // }
 
     const handleCreateTask = async () => {
         const newTask = {
@@ -113,7 +118,7 @@ function App() {
             recurrence,
         };
 
-        await createCalendarEvent(newTask);
+        await createCalendarEvent(newTask, session,  apiUrl, fetchCalendarEvents);
 
         setStart(new Date());
         setEnd(new Date());
@@ -125,7 +130,7 @@ function App() {
     async function fetchCalendarEvents() {
         try {
             const response = await fetch(
-                'https://www.googleapis.com/calendar/v3/calendars/primary/events',
+                apiUrl,
                 {
                     headers: {
                         Authorization:
