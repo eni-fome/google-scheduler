@@ -13,6 +13,7 @@ import { formatDate } from './utils';
 import { createCalendarEvent } from './components/calendarFunctions/createEvent';
 import { fetchCalendarEvents } from './components/calendarFunctions/fetchEvents';
 import { editEvent } from './components/calendarFunctions/editEvent';
+import { deleteEvent } from './components/calendarFunctions/deleteEvent';
 
 function App() {
     const [start, setStart] = useState<Date>(new Date());
@@ -132,31 +133,7 @@ function App() {
         }
     };
 
-    async function deleteEvent(eventId: string) {
-        try {
-            const response = await fetch(
-                `https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`,
-                {
-                    method: 'DELETE',
-                    headers: {
-                        Authorization: `Bearer ${
-                            session?.provider_token || ''
-                        }`,
-                    },
-                },
-            );
 
-            if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
-            }
-
-            // Handle successful deletion
-        } catch (error) {
-            console.error(error);
-            // Handle errors
-        }
-        fetchCalendarEvents(session, apiUrl, setTasks);
-    }
 
     return (
         <div className="App">
@@ -209,7 +186,7 @@ function App() {
                                         </button>
                                         <button
                                             onClick={() =>
-                                                task.id && deleteEvent(task.id)
+                                                task.id && deleteEvent(task.id,setTasks, session, apiUrl)
                                             }
                                         >
                                             ❌
