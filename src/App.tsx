@@ -7,15 +7,12 @@ import {
     useSessionContext,
 } from '@supabase/auth-helpers-react';
 import Form from './components/Form';
-import { RecurrenceType, Task, Event } from './types';
-import {
-    userTimeZone,
-    formatDate,
-    recurrenceRule,
-} from './utils';
+import { RecurrenceType, Task } from './types';
+import { formatDate } from './utils';
 
 import { createCalendarEvent } from './components/calendarFunctions/createEvent';
 import { fetchCalendarEvents } from './components/calendarFunctions/fetchEvents';
+import { editEvent } from './components/calendarFunctions/editEvent';
 
 function App() {
     const [start, setStart] = useState<Date>(new Date());
@@ -31,7 +28,8 @@ function App() {
     const session = useSession();
     const supabase = useSupabaseClient();
     const { isLoading } = useSessionContext();
-    const apiUrl = 'https://www.googleapis.com/calendar/v3/calendars/primary/events'
+    const apiUrl =
+        'https://www.googleapis.com/calendar/v3/calendars/primary/events';
 
     useEffect(() => {
         if (session) {
@@ -60,8 +58,6 @@ function App() {
         await supabase.auth.signOut();
     }
 
-
-
     const handleCreateTask = async () => {
         const newTask = {
             start,
@@ -71,7 +67,12 @@ function App() {
             recurrence,
         };
 
-        await createCalendarEvent(newTask, session,  apiUrl, fetchCalendarEvents);
+        await createCalendarEvent(
+            newTask,
+            session,
+            apiUrl,
+            fetchCalendarEvents,
+        );
 
         setStart(new Date());
         setEnd(new Date());
@@ -79,53 +80,6 @@ function App() {
         setEventDescription('');
         setRecurrence('none');
     };
-
-
-    async function editEvent(eventId: string, task: Task) {
-        const event: Event = {
-            summary: task.eventName,
-            description: task.eventDescription,
-            start: {
-                dateTime: task.start.toISOString(),
-                timeZone: userTimeZone,
-            },
-            end: { dateTime: task.end.toISOString(), timeZone: userTimeZone },
-        };
-
-        if (task.recurrence !== 'none') {
-            event.recurrence = [recurrenceRule(task.recurrence)];
-        } else {
-            event.recurrence = []; // Clear recurrence if it's set to 'none'
-        }
-
-        try {
-            const response = await fetch(
-                `https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`,
-                {
-                    method: 'PUT',
-                    headers: {
-                        Authorization: `Bearer ${
-                            session?.provider_token || ''
-                        }`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(event),
-                },
-            );
-
-            if (!response.ok) {
-                throw new Error(`HTTP Error: ${response.status}`);
-            }
-
-            const jsonResponse = await response.json();
-            console.log('Update successful:', jsonResponse);
-        } catch (error) {
-            console.error('Error during event update:', error);
-            // Optionally log the entire request details for debugging
-            console.log('Request details:', eventId, updatedTask);
-        }
-        fetchCalendarEvents(session, apiUrl, setTasks);
-    }
 
     const startEditingEvent = (task: Task) => {
         setUpdatedTask(task); // Use updatedTask for editing
@@ -151,7 +105,16 @@ function App() {
             };
 
             // Update Google Calendar Event
-            await editEvent(taskId as string, updatedTask);
+            if (updatedTask) {
+                await editEvent(
+                    taskId,
+                    updatedTask,
+                    session,
+                    apiUrl,
+                    setTasks,
+                    setUpdatedTask,
+                );
+            }
 
             // Update Local State
             const newTasks = [...tasks];
@@ -192,7 +155,7 @@ function App() {
             console.error(error);
             // Handle errors
         }
-        fetchCalendarEvents( session, apiUrl, setTasks);
+        fetchCalendarEvents(session, apiUrl, setTasks);
     }
 
     return (
