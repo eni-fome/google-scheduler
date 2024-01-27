@@ -1,5 +1,5 @@
-import { Task, Event } from '../types'; 
-import { userTimeZone, recurrenceRule } from '../utils'; 
+import { Task, Event } from '../../types'; 
+import { userTimeZone, recurrenceRule } from '../../utils'; 
 
 export async function createCalendarEvent(
   task: Task,  

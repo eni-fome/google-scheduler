@@ -12,10 +12,10 @@ import {
     userTimeZone,
     formatDate,
     recurrenceRule,
-    convertRecurrence,
 } from './utils';
 
-import { createCalendarEvent } from './components/calendarService';
+import { createCalendarEvent } from './components/calendarFunctions/createEvent';
+import { fetchCalendarEvents } from './components/calendarFunctions/fetchEvents';
 
 function App() {
     const [start, setStart] = useState<Date>(new Date());
@@ -35,7 +35,7 @@ function App() {
 
     useEffect(() => {
         if (session) {
-            fetchCalendarEvents();
+            fetchCalendarEvents(session, apiUrl, setTasks);
         }
     }, [session]);
 
@@ -80,65 +80,6 @@ function App() {
         setRecurrence('none');
     };
 
-    async function fetchCalendarEvents() {
-        try {
-            const response = await fetch(
-                apiUrl,
-                {
-                    headers: {
-                        Authorization:
-                            'Bearer ' + (session?.provider_token || ''),
-                    },
-                },
-            );
-
-            if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            const transformedTasks: Task[] = data.items
-                .map((item: any) => {
-                    // Check if start and end dates are present
-                    if (
-                        !item.start ||
-                        !item.start.dateTime ||
-                        !item.end ||
-                        !item.end.dateTime
-                    ) {
-                        console.warn(
-                            'Skipping an event with missing start/end dates:',
-                            item,
-                        );
-                        return null; // Return null or some default value for missing dates
-                    }
-
-                    // Check if the event was created with your app
-                    if (
-                        !item.description?.includes(
-                            '[Created with MyCalendarApp]',
-                        )
-                    ) {
-                        return null; // Skip events not created with your app
-                    }
-
-                    return {
-                        id: item.id,
-                        start: new Date(item.start.dateTime),
-                        end: new Date(item.end.dateTime),
-                        eventName: item.summary,
-                        eventDescription: item.description || '',
-                        recurrence: convertRecurrence(item.recurrence),
-                    };
-                })
-                .filter((task: Task | null) => task !== null);
-
-            setTasks(transformedTasks);
-        } catch (error) {
-            console.error(error);
-            // Handle errors
-        }
-    }
 
     async function editEvent(eventId: string, task: Task) {
         const event: Event = {
@@ -183,7 +124,7 @@ function App() {
             // Optionally log the entire request details for debugging
             console.log('Request details:', eventId, updatedTask);
         }
-        fetchCalendarEvents();
+        fetchCalendarEvents(session, apiUrl, setTasks);
     }
 
     const startEditingEvent = (task: Task) => {
@@ -251,7 +192,7 @@ function App() {
             console.error(error);
             // Handle errors
         }
-        fetchCalendarEvents();
+        fetchCalendarEvents( session, apiUrl, setTasks);
     }
 
     return (
