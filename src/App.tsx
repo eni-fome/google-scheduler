@@ -1,31 +1,42 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import './App.css';
 import {useSession, useSupabaseClient, useSessionContext} from '@supabase/auth-helpers-react';
 import Form from './components/Form';
-import { RecurrenceType, Task } from './types';
+import { Task } from './types';
 import { formatDate } from './utils';
 import { createCalendarEvent } from './components/calendarFunctions/createEvent';
 import { fetchCalendarEvents } from './components/calendarFunctions/fetchEvents';
 import { editEvent } from './components/calendarFunctions/editEvent';
 import { deleteEvent } from './components/calendarFunctions/deleteEvent';
+import { useTaskState } from './useTaskState';
 
 function App() {
-    const [start, setStart] = useState<Date>(new Date());
-    const [end, setEnd] = useState<Date>(new Date());
-    const [eventName, setEventName] = useState<string>('');
-    const [eventDescription, setEventDescription] = useState<string>('');
-    const [tasks, setTasks] = useState<Task[]>([]);
-    const [recurrence, setRecurrence] = useState<RecurrenceType>('none');
-    const [showForm, setShowForm] = useState(true);
-    const [showTasksList, setShowTasksList] = useState(true);
-    const [updatedTask, setUpdatedTask] = useState<Task | null>(null);
+    const {
+        start,
+        setStart,
+        end,
+        setEnd,
+        eventName,
+        setEventName,
+        eventDescription,
+        setEventDescription,
+        tasks,
+        setTasks,
+        recurrence,
+        setRecurrence,
+        showForm,
+        setShowForm,
+        showTasksList,
+        setShowTasksList,
+        updatedTask,
+        setUpdatedTask,
+    } = useTaskState();
 
     const session = useSession();
     const supabase = useSupabaseClient();
     const { isLoading } = useSessionContext();
-    const apiUrl =
-        'https://www.googleapis.com/calendar/v3/calendars/primary/events';
+    const apiUrl ='https://www.googleapis.com/calendar/v3/calendars/primary/events';
 
     useEffect(() => {
         if (session) {
