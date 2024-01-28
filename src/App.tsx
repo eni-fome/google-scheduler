@@ -1,15 +1,10 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import './App.css';
-import {
-    useSession,
-    useSupabaseClient,
-    useSessionContext,
-} from '@supabase/auth-helpers-react';
+import {useSession, useSupabaseClient, useSessionContext} from '@supabase/auth-helpers-react';
 import Form from './components/Form';
 import { RecurrenceType, Task } from './types';
 import { formatDate } from './utils';
-
 import { createCalendarEvent } from './components/calendarFunctions/createEvent';
 import { fetchCalendarEvents } from './components/calendarFunctions/fetchEvents';
 import { editEvent } from './components/calendarFunctions/editEvent';
@@ -133,8 +128,6 @@ function App() {
         }
     };
 
-
-
     return (
         <div className="App">
             <div style={{ width: '400px', margin: '30px auto' }}>
@@ -186,7 +179,13 @@ function App() {
                                         </button>
                                         <button
                                             onClick={() =>
-                                                task.id && deleteEvent(task.id,setTasks, session, apiUrl)
+                                                task.id &&
+                                                deleteEvent(
+                                                    task.id,
+                                                    setTasks,
+                                                    session,
+                                                    apiUrl,
+                                                )
                                             }
                                         >
                                             ❌
