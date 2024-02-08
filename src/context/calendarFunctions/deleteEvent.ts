@@ -1,4 +1,4 @@
-import { Task } from "../../types";
+import { Task } from "../../common/types";
 import { fetchCalendarEvents } from "./fetchEvents";
 
 export async function deleteEvent(eventId: string,    setTasks: React.Dispatch<React.SetStateAction<Task[]>>,

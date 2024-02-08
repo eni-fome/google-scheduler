@@ -1,5 +1,5 @@
-import { Task } from "../../types";
-import { convertRecurrence } from "../../utils";
+import { Task } from "../../common/types";
+import { convertRecurrence } from "../../common/utils";
 
 export async function fetchCalendarEvents(
     session: { provider_token?: string | null } | null,
