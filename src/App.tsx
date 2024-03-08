@@ -10,6 +10,10 @@ import { fetchCalendarEvents } from './context/calendarFunctions/fetchEvents';
 import { editEvent } from './context/calendarFunctions/editEvent';
 import { deleteEvent } from './context/calendarFunctions/deleteEvent';
 import { useTaskState } from './hooks/useTaskState';
+import Grid from './components/Grid';
+import { timeIntervals } from './context/gridFunctions/timeIntervals';
+
+
 
 function App() {
     const {
@@ -139,6 +143,12 @@ function App() {
         }
     };
 
+
+    const handleCellClick = (startTime: Date) => {
+        setStart(startTime); // Set the start time
+        setShowForm(true); // Show the form
+    };
+
     return (
         <div className="App">
             <div style={{ width: '400px', margin: '30px auto' }}>
@@ -148,6 +158,7 @@ function App() {
                         <button onClick={() => setShowForm(!showForm)}>
                             {showForm ? 'Close' : 'Add Task'}
                         </button>
+                        <Grid timeIntervals={timeIntervals} handleCellClick={handleCellClick} />
                         {showForm && (
                             <Form
                                 start={start}
